@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="240" height="25" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
- <tileset firstgid="1" source="../Tileset/metroid_jungle.tsx"/>
- <layer id="1" name="Kachelebene 1" width="240" height="25">
-  <data encoding="base64" compression="zlib">
-   eJzt2TlKxGAYh/E3WoyWo8UIdlo4hZUK3sCLuDXqFK6FC7iByygoFgqC6wHUE3gHvYN6Azv/4Yskhihi/Bg0zw8ewpdZvjQvgcQMAAAAAAAAAAAAAPAf7Kg1NarG1JW6bugVAfiuE3XU6IsA8CPcb4G/q1m1JNZP6lm9eNyzpJo8/j9QFO2qI3Xu1fOeFdXmeQ+gCLpVVZUCtw4C//Pbo7o87wEUQb8aUJVofss6tgbumfSGxcevTKhJtanWo6ZU7ZPvD6q+vBcOwObVgppRs2pOPahHc8+lz9WFfZzn5G/CFtWSGtLcd6petaz1irlZHlYjFr+jGo8CkM+eOjb3HunO3PPoaXNzFj6XvlG35uZ4VR2ae2e8q7bUdmJdzziXXKc/A5BPPWrf3HyG99f3+3B4v720eI4P1L06VWfm5jFrhtPznPUd5hcAAAAAAAAAAAAAftcb9BpDBw==
-  </data>
- </layer>
-</map>
