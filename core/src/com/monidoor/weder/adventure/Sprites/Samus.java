@@ -1,6 +1,8 @@
 package com.monidoor.weder.adventure.Sprites;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -17,6 +19,13 @@ public class Samus extends Sprite {
         this.world = world;
 
         defineSamus();
+        TextureRegion txt = new TextureRegion(new Texture("sample_player.png"), 16, 16);
+        setBounds(0,0,16 / Adventure.PPM,16 / Adventure.PPM);
+        setRegion(txt);
+    }
+
+    public void update(float dt) {
+        setPosition(b2Body.getPosition().x - getWidth() / 2, b2Body.getPosition().y - getHeight() / 2);
     }
 
     private void defineSamus() {

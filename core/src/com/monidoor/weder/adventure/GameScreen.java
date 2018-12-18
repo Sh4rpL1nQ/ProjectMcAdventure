@@ -66,7 +66,7 @@ public class GameScreen implements Screen {
         handleInput(dt);
 
         world.step(1/60f, 6, 2);
-
+        samus.update(dt);
         gameCam.position.x = samus.b2Body.getPosition().x;
 
         gameCam.update();
@@ -93,6 +93,11 @@ public class GameScreen implements Screen {
 
         renderer.render();
         controller.draw();
+
+        game.batch.setProjectionMatrix(gameCam.combined);
+        game.batch.begin();
+        samus.draw(game.batch);
+        game.batch.end();
 
         box2DRenderer.render(world, gameCam.combined);
     }

@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.monidoor.weder.adventure.Adventure;
+import com.monidoor.weder.adventure.Sprites.BombableObject;
 
 public class WorldCreator {
 
@@ -46,14 +47,7 @@ public class WorldCreator {
         for (MapObject obj : tileMap.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rect = ((RectangleMapObject) obj).getRectangle();
 
-            bDef.type = BodyDef.BodyType.StaticBody;
-            bDef.position.set((rect.getX() + rect.getWidth() / 2) / Adventure.PPM, (rect.getY() + rect.getHeight() / 2) / Adventure.PPM);
-
-            body = world.createBody(bDef);
-
-            pShape.setAsBox(rect.getWidth() / 2 / Adventure.PPM, rect.getHeight() / 2 / Adventure.PPM);
-            fixDef.shape = pShape;
-            body.createFixture(fixDef);
+            new BombableObject(world, tileMap, rect);
         }
     }
 }

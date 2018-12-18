@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.monidoor.weder.adventure.Adventure;
@@ -26,7 +27,7 @@ public class Controller {
         Gdx.input.setInputProcessor(stage);
 
         Table table = new Table();
-        table.left().bottom();
+        table.bottom();
 
         Image leftImage = new Image(new Texture("arrow_left.png"));
         Image rightImage = new Image(new Texture("arrow_right.png"));
@@ -98,26 +99,44 @@ public class Controller {
             }
         });
 
-        table.add();
-        table.add(upImage).size(upImage.getWidth(), upImage.getHeight());
-        table.add();
-        table.row().pad(5, 5, 5, 5);
-        table.add(leftImage).size(leftImage.getWidth(), leftImage.getHeight());
-        table.add();
-        table.add(rightImage).size(rightImage.getWidth(), rightImage.getHeight());
-        table.row().padBottom(5);
-        table.add();
-        table.add(downImage).size(downImage.getWidth(), downImage.getHeight());
-        table.add();
+        Table cross = new Table();
+        Table action = new Table();
+        table.setFillParent(true);
+
+        cross.add();
+        cross.add(upImage).size(upImage.getWidth(), upImage.getHeight());
+        cross.add();
+        cross.row().pad(5, 5, 5, 5);
+
+        cross.add(leftImage).size(leftImage.getWidth(), leftImage.getHeight());
+        cross.add();
+        cross.add(rightImage).size(rightImage.getWidth(), rightImage.getHeight());
+        cross.row().padBottom(5);
+
+        cross.add();
+        cross.add(downImage).size(downImage.getWidth(), downImage.getHeight());
+        cross.add();
+
+        action.add();
+        action.add();
+        action.add();
+        action.row().pad(5,5,5,5);
+        action.add();
+        action.add(shootImage).size(shootImage.getWidth(), shootImage.getHeight());
+        action.add(jumpImage).size(jumpImage.getWidth(), jumpImage.getHeight());
+        action.row().padBottom(5);
+        action.add();
+        action.add();
+        action.add();
+
+        float a = viewPort.getWorldWidth();
+        table.add(cross);
+        table.add().width(a/6);
+        table.add().width(a/6);
+        table.add().width(a/6);
+        table.add(action);
 
         stage.addActor(table);
-
-        Table rightHandSide = new Table();
-        rightHandSide.right().bottom();
-        rightHandSide.add(shootImage).size(shootImage.getWidth(), shootImage.getHeight());
-        rightHandSide.add(jumpImage).size(jumpImage.getWidth(), jumpImage.getHeight());
-
-        stage.addActor(rightHandSide);
     }
 
     public void draw() {
