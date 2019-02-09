@@ -10,4 +10,9 @@ public class ShootableObject extends SpecialObject {
     public ShootableObject(GameScreen screen, Rectangle bounds) {
         super(screen, bounds);
     }
+
+    @Override
+    public void defineObject() {
+
+    }
 }

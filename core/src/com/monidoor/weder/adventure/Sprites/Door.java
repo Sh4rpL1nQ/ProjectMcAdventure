@@ -8,4 +8,13 @@ public class Door extends SpecialObject {
     public Door(GameScreen screen, Rectangle bounds) {
         super(screen, bounds);
     }
+
+    @Override
+    public void defineObject() {
+
+    }
+
+    public void hit() {
+
+    }
 }

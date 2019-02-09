@@ -26,17 +26,8 @@ public abstract class SpecialObject {
         TiledMap map = screen.getMap();
         this.bounds = bounds;
 
-        BodyDef bDef = new BodyDef();
-        FixtureDef fDef = new FixtureDef();
-        PolygonShape pShape = new PolygonShape();
-
-        bDef.type = BodyDef.BodyType.StaticBody;
-        bDef.position.set((bounds.getX() + bounds.getWidth() / 2) / Adventure.PPM, (bounds.getY() + bounds.getHeight() / 2) / Adventure.PPM);
-
-        body = world.createBody(bDef);
-
-        pShape.setAsBox(bounds.getWidth() / 2 / Adventure.PPM, bounds.getHeight() / 2 / Adventure.PPM);
-        fDef.shape = pShape;
-        fixture = body.createFixture(fDef);
+        defineObject();
     }
+
+    public abstract void defineObject();
 }

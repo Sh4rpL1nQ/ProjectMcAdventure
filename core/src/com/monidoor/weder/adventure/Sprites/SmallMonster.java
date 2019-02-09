@@ -22,16 +22,20 @@ public class SmallMonster extends Enemy
     private boolean destroyed;
     float angle;
 
-
     public SmallMonster(GameScreen screen, float x, float y) {
         super(screen, x, y);
+        //frames = new Array<TextureRegion>();
+        //TextureRegion txt = new TextureRegion(new Texture("sample_enemy.png"), 16, 16);
+        //frames.add(txt);
+        //frames.add(txt);
+        //walkAnimation = new Animation(0.4f, frames);
         frames = new Array<TextureRegion>();
-        TextureRegion txt = new TextureRegion(new Texture("sample_enemy.png"), 16, 16);
-        frames.add(txt);
-        frames.add(txt);
+        for(int i = 0; i < 3; i++)
+            frames.add(new TextureRegion(screen.getAtlas().findRegion("enemy_one"), i * 32, -19, 32, 87));
         walkAnimation = new Animation(0.4f, frames);
         stateTime = 0;
-        setBounds(getX(), getY(), 16 / Adventure.PPM, 16 / Adventure.PPM);
+        ATTACK_POINTS = 30;
+        setBounds(getX(), getY(), 32 / Adventure.PPM, 87 / Adventure.PPM);
         setToDestroy = false;
         destroyed = false;
         angle = 0;
@@ -42,13 +46,28 @@ public class SmallMonster extends Enemy
         if(setToDestroy && !destroyed){
             world.destroyBody(b2body);
             destroyed = true;
+            setRegion(new TextureRegion(screen.getAtlas().findRegion("enemy_one"), 32, -19, 32, 87));
+
             stateTime = 0;
         }
         else if(!destroyed) {
             b2body.setLinearVelocity(velocity);
             setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
-            setRegion((TextureRegion)walkAnimation.getKeyFrame(stateTime, true));
+            handleRegion((TextureRegion)walkAnimation.getKeyFrame(stateTime, true));
         }
+    }
+
+    private void handleRegion(TextureRegion region) {
+        if((b2body.getLinearVelocity().x < 0) && !region.isFlipX()){
+            region.flip(true, false);
+        }
+
+        //if mario is running right and the texture isnt facing right... flip it.
+        else if((b2body.getLinearVelocity().x > 0) && region.isFlipX()){
+            region.flip(true, false);
+        }
+
+        setRegion(region);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class PotionItem extends Item {
         super(screen, x, y);
         this.x = x;
         this.y = y;
-        setRegion(new TextureRegion(new Texture("sample_player.png"), 16, 16));
+        setRegion(new TextureRegion(new Texture("health.png"), 16, 16));
         setBounds(getX(), getY(), 16 / Adventure.PPM, 16 / Adventure.PPM);
     }
 
@@ -38,6 +38,7 @@ public class PotionItem extends Item {
 
     @Override
     public void use(Samus samus) {
+        samus.health += 100;
         destroy();
     }
 

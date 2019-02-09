@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,6 +22,7 @@ public class GameOverScreen implements Screen {
 
     public GameOverScreen(Game game){
         this.game = game;
+
         viewport = new FitViewport(Adventure.V_WIDTH, Adventure.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, ((Adventure) game).batch);
 

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.monidoor.weder.adventure.Scenes.Hud;
 import com.monidoor.weder.adventure.Sprites.Enemy;
 import com.monidoor.weder.adventure.Sprites.Item;
 import com.monidoor.weder.adventure.Sprites.SmallMonster;
@@ -35,9 +37,13 @@ public class GameScreen implements Screen {
     private World world;
     private Box2DDebugRenderer box2DRenderer;
     private WorldCreator creator;
+    private TextureAtlas atlas;
+
+    private Hud hud;
 
     public GameScreen(Adventure game) {
         this.game = game;
+        atlas = new TextureAtlas("sprites/packed/samus_and_enemy.txt");
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(Adventure.V_WIDTH / Adventure.PPM, Adventure.V_HEIGHT / Adventure.PPM, gameCam);
         mapLoader = new TmxMapLoader();
@@ -59,52 +65,12 @@ public class GameScreen implements Screen {
         controller = new Controller();
 
         world.setContactListener(new WorldContactListener());
+
+        hud = new Hud(game.batch);
     }
 
-    private void checkCam() {
-        int mapLeft = 0;
-        int mapRight = 0 + Adventure.V_WIDTH;
-        int mapBottom = 0;
-// The top boundary of the map (y + height)
-        int mapTop = 0 + Adventure.V_HEIGHT;
-// The camera dimensions, halved
-        float cameraHalfWidth = gameCam.viewportWidth * .5f;
-        float cameraHalfHeight = gameCam.viewportHeight * .5f;
-
-// Move camera after player as normal
-
-        float cameraLeft = gameCam.position.x - cameraHalfWidth;
-        float cameraRight = gameCam.position.x + cameraHalfWidth;
-        float cameraBottom = gameCam.position.y - cameraHalfHeight;
-        float cameraTop = gameCam.position.y + cameraHalfHeight;
-
-// Horizontal axis
-        if(Adventure.V_WIDTH < gameCam.viewportWidth)
-        {
-            gameCam.position.x = mapRight / 2;
-        }
-        else if(cameraLeft <= mapLeft)
-        {
-            gameCam.position.x = mapLeft + cameraHalfWidth;
-        }
-        else if(cameraRight >= mapRight)
-        {
-            gameCam.position.x = mapRight - cameraHalfWidth;
-        }
-
-// Vertical axis
-        if(Adventure.V_HEIGHT < gameCam.viewportHeight)
-        {
-            gameCam.position.y = mapTop / 2;
-        }
-        else if(cameraBottom <= mapBottom)
-        {
-            gameCam.position.y = mapBottom + cameraHalfHeight;
-        }
-        else if(cameraTop >= mapTop)
-        {
-            gameCam.position.y = mapTop - cameraHalfHeight;
-        }
+    public TextureAtlas getAtlas(){
+        return atlas;
     }
 
     public TiledMap getMap() {
@@ -134,6 +100,7 @@ public class GameScreen implements Screen {
         }
 
         gameCam.update();
+        hud.update(samus.health);
         renderer.setView(gameCam);
     }
 
@@ -163,6 +130,7 @@ public class GameScreen implements Screen {
         controller.draw();
 
         game.batch.setProjectionMatrix(gameCam.combined);
+
         game.batch.begin();
         samus.draw(game.batch);
         for (Enemy enemy : creator.getEnemies())
@@ -171,6 +139,9 @@ public class GameScreen implements Screen {
             item.draw(game.batch);
         game.batch.end();
         box2DRenderer.render(world, gameCam.combined);
+
+        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.stage.draw();
 
         if(gameOver()) {
             dispose();

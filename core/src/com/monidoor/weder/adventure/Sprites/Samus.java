@@ -1,5 +1,6 @@
 package com.monidoor.weder.adventure.Sprites;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -30,9 +31,12 @@ public class Samus extends Sprite {
     private TextureRegion samusDead;
 
     private float stateTimer;
+    private float floatableTimer = 0;
     private float prevStateTimer;
     private boolean runningRight;
     private boolean samusIsDead;
+    public int health;
+    private boolean isHit;
 
     private Array<Bullet> bullets;
     private GameScreen screen;
@@ -43,11 +47,21 @@ public class Samus extends Sprite {
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0;
+        health = 100;
         runningRight = true;
+
+        Array<TextureRegion> frames = new Array<TextureRegion>();
+
+        //get run animation frames and add them to marioRun Animation
+        for(int i = 1; i < 4; i++)
+            frames.add(new TextureRegion(screen.getAtlas().findRegion("samus_run"), i * 28, 0, 28, 36));
+        samusRun = new Animation(0.1f, frames);
+        samusStand = new TextureRegion(screen.getAtlas().findRegion("samus_run"), 0, 0, 28, 36);
         defineSamus();
-        TextureRegion txt = new TextureRegion(new Texture("sample_player.png"), 16, 16);
-        setBounds(0,0,16 / Adventure.PPM,16 / Adventure.PPM);
-        setRegion(txt);
+        setBounds(0, 0, 28 / Adventure.PPM, 36 / Adventure.PPM);
+        //TextureRegion txt = new TextureRegion(new Texture("sample_player.png"), 16, 16);
+        //setBounds(0,0,16 / Adventure.PPM,16 / Adventure.PPM);
+        //setRegion(txt);
 
         bullets = new Array<Bullet>();
     }
@@ -62,6 +76,22 @@ public class Samus extends Sprite {
             ball.update(dt);
             if(ball.isDestroyed())
                 bullets.removeValue(ball, true);
+        }
+
+        if (isHit) {
+            floatableTimer += Gdx.graphics.getDeltaTime();
+            Array<Fixture> a = b2Body.getFixtureList();
+            Filter f = new Filter();
+
+            f.categoryBits = Adventure.SAMUS_BIT;
+            f.maskBits = Adventure.GROUND_BIT | Adventure.Door_BIT | Adventure.OBJECT_BIT | Adventure.ITEM_BIT;
+            a.get(0).setFilterData(f);
+            if (floatableTimer >= 3) {
+                f.categoryBits = Adventure.SAMUS_BIT;
+                f.maskBits = Adventure.GROUND_BIT | Adventure.Door_BIT | Adventure.OBJECT_BIT | Adventure.ITEM_BIT | Adventure.ENEMY_BIT;
+                a.get(0).setFilterData(f);
+                isHit = false;
+            }
         }
     }
 
@@ -95,33 +125,39 @@ public class Samus extends Sprite {
         //get marios current state. ie. jumping, running, standing...
         currentState = getState();
 
-        TextureRegion region;
+        TextureRegion region = null;
 
         //depending on the state, get corresponding animation keyFrame.
         switch(currentState){
             case DEAD:
-
+                region = samusStand;
                 break;
             case JUMPING:
-
+                region = samusStand;
                 break;
             case RUNNING:
-
+                region = (TextureRegion)samusRun.getKeyFrame(stateTimer, true);
                 break;
             case FALLING:
+                region = samusStand;
                 break;
             case STANDING:
+                region = samusStand;
+                break;
             default:
+                region = samusStand;
                 break;
         }
 
         //if mario is running left and the texture isnt facing left... flip it.
-        if((b2Body.getLinearVelocity().x < 0 || !runningRight)){
+        if((b2Body.getLinearVelocity().x < 0 || !runningRight) && !region.isFlipX()){
+            region.flip(true, false);
             runningRight = false;
         }
 
         //if mario is running right and the texture isnt facing right... flip it.
-        else if((b2Body.getLinearVelocity().x > 0 || runningRight)){
+        else if((b2Body.getLinearVelocity().x > 0 || runningRight) && region.isFlipX()){
+            region.flip(true, false);
             runningRight = true;
         }
 
@@ -131,7 +167,7 @@ public class Samus extends Sprite {
         //update previous state
         previousState = currentState;
         //return our final adjusted frame
-        return new TextureRegion(new Texture("sample_player.png"), 16, 16);
+        return region;
 
     }
 
@@ -143,7 +179,7 @@ public class Samus extends Sprite {
 
         FixtureDef fDef = new FixtureDef();
         fDef.filter.categoryBits = Adventure.SAMUS_BIT;
-        fDef.filter.maskBits = Adventure.GROUND_BIT | Adventure.Door_BIT | Adventure.ENEMY_BIT| Adventure.OBJECT_BIT;
+        fDef.filter.maskBits = Adventure.GROUND_BIT | Adventure.Door_BIT | Adventure.ENEMY_BIT| Adventure.OBJECT_BIT | Adventure.ITEM_BIT;
         CircleShape shape = new CircleShape();
         shape.setRadius(5 / Adventure.PPM);
         fDef.shape = shape;
@@ -159,7 +195,24 @@ public class Samus extends Sprite {
     }
 
     public void hit(Enemy enemy){
-        die();
+        if (health - enemy.ATTACK_POINTS <= 0) {
+            die();
+        } else {
+            health -= enemy.ATTACK_POINTS;
+            isHit = true;
+            floatableTimer = 0;
+            if (enemy.velocity.x < 0 && runningRight == true)
+                b2Body.applyLinearImpulse(new Vector2(-2f, 2f), b2Body.getWorldCenter(), true);
+            else if (enemy.velocity.x < 0 && runningRight) {
+                b2Body.applyLinearImpulse(new Vector2(-2f, 2f), b2Body.getWorldCenter(), true);
+            }
+            else if (enemy.velocity.x > 0 && runningRight) {
+                b2Body.applyLinearImpulse(new Vector2(2f, 2f), b2Body.getWorldCenter(), true);
+            }
+            else {
+                b2Body.applyLinearImpulse(new Vector2(2f, 2f), b2Body.getWorldCenter(), true);
+            }
+        }
     }
 
     public void die() {

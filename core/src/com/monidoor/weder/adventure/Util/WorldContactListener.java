@@ -55,6 +55,8 @@ public class WorldContactListener implements ContactListener {
                 else
                     ((Enemy)fixB.getUserData()).hitten();
                 break;
+            case Adventure.BULLET_BIT | Adventure.Door_BIT:
+                break;
             default: break;
         }
     }
