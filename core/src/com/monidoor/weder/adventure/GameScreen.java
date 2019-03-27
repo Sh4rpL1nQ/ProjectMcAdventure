@@ -14,10 +14,13 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.monidoor.weder.adventure.Room.Room;
+import com.monidoor.weder.adventure.Room.RoomMatrix;
 import com.monidoor.weder.adventure.Scenes.Hud;
 import com.monidoor.weder.adventure.Sprites.Enemy;
 import com.monidoor.weder.adventure.Sprites.Item;
 import com.monidoor.weder.adventure.Sprites.SmallMonster;
+import com.monidoor.weder.adventure.Sprites.SpecialObject;
 import com.monidoor.weder.adventure.Util.WorldContactListener;
 import com.monidoor.weder.adventure.Util.WorldCreator;
 import com.monidoor.weder.adventure.Scenes.Controller;
@@ -27,12 +30,13 @@ public class GameScreen implements Screen {
 
     private Adventure game;
     private OrthographicCamera gameCam;
-    private Viewport gamePort;
+    public Viewport gamePort;
     private TmxMapLoader mapLoader;
-    private TiledMap tileMap;
-    private OrthogonalTiledMapRenderer renderer;
+    public TiledMap tileMap;
+    public OrthogonalTiledMapRenderer renderer;
     private Samus samus;
     private Controller controller;
+    public RoomMatrix roomMatrix;
 
     private World world;
     private Box2DDebugRenderer box2DRenderer;
@@ -47,18 +51,22 @@ public class GameScreen implements Screen {
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(Adventure.V_WIDTH / Adventure.PPM, Adventure.V_HEIGHT / Adventure.PPM, gameCam);
         mapLoader = new TmxMapLoader();
-        tileMap = mapLoader.load("Map1_Room1.tmx");
-
-        renderer = new OrthogonalTiledMapRenderer(tileMap, 1 / Adventure.PPM);
 
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
         world = new World(new Vector2(0, -10), true);
 
+        samus = new Samus(this);
+
+        roomMatrix = new RoomMatrix(samus, this);
+        roomMatrix.currentRoom = roomMatrix.setRoomByMap("Map1_Room2");
+
+        String b = roomMatrix.currentRoom.getTileMap() + ".tmx";
+        tileMap = mapLoader.load( "rooms/"+b);
+        renderer = new OrthogonalTiledMapRenderer(tileMap, 1 / Adventure.PPM);
+
         creator = new WorldCreator(this);
         creator.generate();
-
-        samus = new Samus(this);
 
         box2DRenderer = new Box2DDebugRenderer();
 
@@ -67,6 +75,17 @@ public class GameScreen implements Screen {
         world.setContactListener(new WorldContactListener());
 
         hud = new Hud(game.batch);
+    }
+
+
+    public void InitMap(TiledMap map) {
+        world.dispose();
+        world = new World(new Vector2(0, -10), true);
+        creator = new WorldCreator(this);
+        creator.generate();
+        samus.world = world;
+        samus.defineSamus();
+        samus.setPosition(100 / Adventure.PPM, 32 / Adventure.PPM);
     }
 
     public TextureAtlas getAtlas(){
@@ -95,6 +114,8 @@ public class GameScreen implements Screen {
         }
         for(Item item : creator.getItems())
             item.update(dt);
+        for(SpecialObject inter : creator.getInteractable())
+            inter.update(dt);
         if(samus.currentState != Samus.State.DEAD) {
             gameCam.position.x = samus.b2Body.getPosition().x;
         }
@@ -137,6 +158,8 @@ public class GameScreen implements Screen {
             enemy.draw(game.batch);
         for (Item item : creator.getItems())
             item.draw(game.batch);
+        for (SpecialObject inter : creator.getInteractable())
+            inter.draw(game.batch);
         game.batch.end();
         box2DRenderer.render(world, gameCam.combined);
 

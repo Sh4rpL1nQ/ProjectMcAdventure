@@ -54,7 +54,8 @@ public class Bullet extends Sprite {
                 Adventure.GROUND_BIT |
                 Adventure.ENEMY_BIT |
                 Adventure.OBJECT_BIT |
-                Adventure.Door_BIT;
+                Adventure.Door_BIT |
+                Adventure.PORTAL_BIT;
 
         fdef.shape = shape;
         fdef.restitution = 1;

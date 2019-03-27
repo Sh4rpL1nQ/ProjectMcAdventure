@@ -27,12 +27,9 @@ public class Samus extends Sprite {
     public State previousState;
     private TextureRegion samusStand;
     private Animation samusRun;
-    private TextureRegion samusJump;
-    private TextureRegion samusDead;
 
     private float stateTimer;
     private float floatableTimer = 0;
-    private float prevStateTimer;
     private boolean runningRight;
     private boolean samusIsDead;
     public int health;
@@ -52,16 +49,12 @@ public class Samus extends Sprite {
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
 
-        //get run animation frames and add them to marioRun Animation
         for(int i = 1; i < 4; i++)
             frames.add(new TextureRegion(screen.getAtlas().findRegion("samus_run"), i * 28, 0, 28, 36));
         samusRun = new Animation(0.1f, frames);
         samusStand = new TextureRegion(screen.getAtlas().findRegion("samus_run"), 0, 0, 28, 36);
         defineSamus();
         setBounds(0, 0, 28 / Adventure.PPM, 36 / Adventure.PPM);
-        //TextureRegion txt = new TextureRegion(new Texture("sample_player.png"), 16, 16);
-        //setBounds(0,0,16 / Adventure.PPM,16 / Adventure.PPM);
-        //setRegion(txt);
 
         bullets = new Array<Bullet>();
     }
@@ -122,12 +115,10 @@ public class Samus extends Sprite {
     }
 
     public TextureRegion getFrame(float dt){
-        //get marios current state. ie. jumping, running, standing...
         currentState = getState();
 
         TextureRegion region = null;
 
-        //depending on the state, get corresponding animation keyFrame.
         switch(currentState){
             case DEAD:
                 region = samusStand;
@@ -149,29 +140,21 @@ public class Samus extends Sprite {
                 break;
         }
 
-        //if mario is running left and the texture isnt facing left... flip it.
         if((b2Body.getLinearVelocity().x < 0 || !runningRight) && !region.isFlipX()){
             region.flip(true, false);
             runningRight = false;
         }
-
-        //if mario is running right and the texture isnt facing right... flip it.
         else if((b2Body.getLinearVelocity().x > 0 || runningRight) && region.isFlipX()){
             region.flip(true, false);
             runningRight = true;
         }
-
-        //if the current state is the same as the previous state increase the state timer.
-        //otherwise the state has changed and we need to reset timer.
         stateTimer = currentState == previousState ? stateTimer + dt : 0;
-        //update previous state
         previousState = currentState;
-        //return our final adjusted frame
         return region;
 
     }
 
-    private void defineSamus() {
+    public void defineSamus() {
         BodyDef bDef = new BodyDef();
         bDef.position.set(100 / Adventure.PPM, 32 / Adventure.PPM);
         bDef.type = BodyDef.BodyType.DynamicBody;
@@ -179,7 +162,7 @@ public class Samus extends Sprite {
 
         FixtureDef fDef = new FixtureDef();
         fDef.filter.categoryBits = Adventure.SAMUS_BIT;
-        fDef.filter.maskBits = Adventure.GROUND_BIT | Adventure.Door_BIT | Adventure.ENEMY_BIT| Adventure.OBJECT_BIT | Adventure.ITEM_BIT;
+        fDef.filter.maskBits = Adventure.GROUND_BIT | Adventure.Door_BIT | Adventure.ENEMY_BIT| Adventure.OBJECT_BIT | Adventure.ITEM_BIT | Adventure.PORTAL_BIT;
         CircleShape shape = new CircleShape();
         shape.setRadius(5 / Adventure.PPM);
         fDef.shape = shape;

@@ -8,8 +8,10 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.monidoor.weder.adventure.Adventure;
 import com.monidoor.weder.adventure.Sprites.Bullet;
+import com.monidoor.weder.adventure.Sprites.Door;
 import com.monidoor.weder.adventure.Sprites.Enemy;
 import com.monidoor.weder.adventure.Sprites.Item;
+import com.monidoor.weder.adventure.Sprites.Portal;
 import com.monidoor.weder.adventure.Sprites.Samus;
 
 public class WorldContactListener implements ContactListener {
@@ -56,6 +58,14 @@ public class WorldContactListener implements ContactListener {
                     ((Enemy)fixB.getUserData()).hitten();
                 break;
             case Adventure.BULLET_BIT | Adventure.Door_BIT:
+                if (fixA.getFilterData().categoryBits == Adventure.Door_BIT) {
+                    ((Door)fixA.getUserData()).open();
+                }
+                break;
+            case Adventure.SAMUS_BIT | Adventure.PORTAL_BIT:
+                if (fixA.getFilterData().categoryBits == Adventure.PORTAL_BIT) {
+                    ((Portal)fixA.getUserData()).open();
+                }
                 break;
             default: break;
         }
