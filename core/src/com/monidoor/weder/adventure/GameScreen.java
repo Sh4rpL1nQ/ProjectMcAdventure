@@ -68,8 +68,6 @@ public class GameScreen implements Screen {
         creator = new WorldCreator(this);
         creator.generate();
 
-        box2DRenderer = new Box2DDebugRenderer();
-
         controller = new Controller();
 
         world.setContactListener(new WorldContactListener());
@@ -161,7 +159,7 @@ public class GameScreen implements Screen {
         for (SpecialObject inter : creator.getInteractable())
             inter.draw(game.batch);
         game.batch.end();
-        box2DRenderer.render(world, gameCam.combined);
+        //box2DRenderer.render(world, gameCam.combined);
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
@@ -204,7 +202,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         tileMap.dispose();
         renderer.dispose();
-        box2DRenderer.dispose();
+        // box2DRenderer.dispose();
         world.dispose();
     }
 }
